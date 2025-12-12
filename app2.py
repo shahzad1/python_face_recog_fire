@@ -11,11 +11,15 @@ from flask_cors import CORS
 import numpy as np
 import face_recognition
 from PIL import Image
+from google.oauth2 import service_account
 
 app = Flask(__name__)
 CORS(app)
 
-db = firestore.Client()
+creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+creds = service_account.Credentials.from_service_account_info(json.loads(creds_json))
+
+db = firestore.Client(credentials=creds, project=creds.project_id)
 FACES_COLLECTION = "faces"
 TOLERANCE = 0.6  # adjust as needed
 
@@ -163,3 +167,4 @@ def recognize_multi_faces():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
